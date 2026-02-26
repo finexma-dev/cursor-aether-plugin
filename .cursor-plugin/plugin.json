@@ -1,0 +1,23 @@
+{
+  "name": "aether",
+  "displayName": "Aether",
+  "version": "0.5.0",
+  "description": "AI co-debugging for Unity. One-click install—your AI can see your game.",
+  "author": {
+    "name": "Finexma",
+    "email": "support@getaether.dev"
+  },
+  "license": "MIT",
+  "logo": "assets/avatar.png",
+  "keywords": [
+    "aether",
+    "unity",
+    "debugging",
+    "mcp",
+    "game-dev",
+    "gtml",
+    "live-inspector",
+    "replay"
+  ],
+  "skills": "./skills/"
+}
