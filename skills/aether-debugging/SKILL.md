@@ -1,34 +1,29 @@
 ---
 name: aether-debugging
-description: Use Aether MCP tools when debugging Unity gameplay behavior, analyzing runtime crashes, inspecting object state during Play Mode, or when the user asks what happened before a crash or why an object is misbehaving.
+description: Debug Unity gameplay behavior using Aether MCP tools. Use when the user reports a gameplay bug, unexpected object behavior, or needs to inspect live game state during Play Mode.
 ---
 
-# Aether Unity Debugging
-
-## MCP Gate (Required First)
-
-**Before recommending any Aether tool calls:** If Aether tools are not available or tool calls fail (e.g. "tool not found," "aether_snapshot failed"):
-
-1. **Instruct the user to run** `npx aether-init` from their Unity project root.
-2. **Tell them to reload Cursor** (Ctrl+Shift+P → "Reload Window").
-3. **Tell them to enter Play mode** in Unity.
-4. **Then retry** the question.
-
-Only recommend tool calls after confirming Aether is configured. The plugin auto-downloads the bridge on first use; if that failed, `npx aether-init` will fix it.
-
----
+# Gameplay Debugging
 
 ## When to Use
 
-- User mentions Unity, gameplay bug, crash, or runtime error
-- User asks "what went wrong?", "what happened before this crash?", "why is this object falling through the floor?"
-- User is debugging in Play Mode and needs object state or event history
+- User mentions a Unity gameplay bug or unexpected behavior (not crashes — see aether-crash-investigation)
+- User asks "why is this object falling through the floor?", "why isn't my animation playing?", or "what's wrong with my player controller?"
+- User is in Play Mode and needs to inspect object state or recent events
 - User references Aether tools or GTML
 
-## Prerequisites (for tool calls)
+## Prerequisites
 
 1. Bridge installed (plugin auto-downloads, or user ran `npx aether-init`)
-2. Unity is in Play Mode (for live data) or has recorded a session (for replay)
+2. Unity is in Play Mode
+
+## Workflow
+
+1. **Snapshot the object:** Use `aether_snapshot` to get the current state of the selected GameObject — transforms, components, fields.
+2. **Check recent events:** Use `aether_tail` with a 5–15s window to see what happened recently — state changes, events, console messages.
+3. **Search logs:** Use `aether_console` with text filters to find relevant log entries.
+4. **Analyze GTML:** Look for `[ISSUE: ...]` tags in the output — these are detected problems (disabled colliders, zero velocity, missing references, etc.).
+5. **Suggest a fix:** Based on the evidence, propose a targeted code change.
 
 ## Key Tools
 
@@ -37,16 +32,8 @@ Only recommend tool calls after confirming Aether is configured. The plugin auto
 | `aether_snapshot` | Need current state of selected GameObject, scene, frame |
 | `aether_tail` | Need recent events, console logs, state changes (last N seconds) |
 | `aether_console` | Need to search/filter Unity stdout logs |
-| `aether_last_run_answer` | Need causal answer for "what led to this?" with receipts |
 | `aether_docs` | Need full tool documentation |
-
-## Workflow
-
-1. **Live Inspector**: User selects GameObject in Unity → ask for snapshot → analyze GTML for issues (disabled colliders, wrong velocity, etc.)
-2. **Replay / Crash**: User hit a bug → ask "what happened before this crash?" → use `aether_tail` or `aether_last_run_answer` for timeline
-3. **Console search**: Use `aether_console` with text/level filters to find relevant logs
-4. **Verification**: After making code changes, ask the user to enter Play mode, then use Aether to verify the fix worked (snapshot, tail, or last_run_answer)
 
 ## Output Format
 
-Aether returns GTML (Game Temporal Markup Language)—structured XML that LLMs parse well. Look for `[ISSUE: ...]` tags for detected problems.
+Aether returns GTML (Game Temporal Markup Language) — structured XML that LLMs parse well. Look for `[ISSUE: ...]` tags for detected problems.
